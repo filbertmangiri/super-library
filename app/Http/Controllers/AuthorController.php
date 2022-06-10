@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Author;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\StoreAuthorRequest;
 use App\Http\Requests\UpdateAuthorRequest;
@@ -16,9 +17,9 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        return view('author.index', [
+        /* return view('author.index', [
             'authors' => Author::all()
-        ]);
+        ]); */
     }
 
     /**
@@ -28,7 +29,7 @@ class AuthorController extends Controller
      */
     public function create()
     {
-        //
+        return view('dashboard.author.create');
     }
 
     /**
@@ -39,7 +40,15 @@ class AuthorController extends Controller
      */
     public function store(StoreAuthorRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $validated['slug'] = Str::slug($validated['name']);
+
+        Author::create($validated);
+
+        return Redirect::route('dashboard.author')->with('alert', [
+            'text' => 'Berhasil menambahkan penulis'
+        ]);
     }
 
     /**
@@ -61,7 +70,9 @@ class AuthorController extends Controller
      */
     public function edit(Author $author)
     {
-        //
+        return view('dashboard.author.edit', [
+            'author' => $author
+        ]);
     }
 
     /**
@@ -73,7 +84,15 @@ class AuthorController extends Controller
      */
     public function update(UpdateAuthorRequest $request, Author $author)
     {
-        //
+        $validated = $request->validated();
+
+        $validated['slug'] = Str::slug($validated['name']);
+
+        $author->update($validated);
+
+        return Redirect::route('dashboard.author')->with('alert', [
+            'text' => 'Berhasil memperbarui penulis'
+        ]);
     }
 
     /**
@@ -84,6 +103,10 @@ class AuthorController extends Controller
      */
     public function destroy(Author $author)
     {
-        //
+        Author::destroy($author->id);
+
+        return Redirect::route('dashboard.author')->with('alert', [
+            'text' => 'Berhasil menghapus penulis'
+        ]);
     }
 }

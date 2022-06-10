@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use App\Models\User;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -14,6 +15,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
+        \App\Models\Model\User::class => \App\Policies\UserPolicy::class,
+        \App\Models\Model\Book::class => \App\Policies\BookPolicy::class,
+        \App\Models\Model\Author::class => \App\Policies\AuthorPolicy::class,
+        \App\Models\Model\Category::class => \App\Policies\CategoryPolicy::class,
+        \App\Models\Model\Review::class => \App\Policies\ReviewPolicy::class,
     ];
 
     /**
@@ -25,6 +31,12 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Gate::define('admin', function (User $user) {
+            return $user->level >= 2;
+        });
+
+        Gate::define('atleast_moderator', function (User $user) {
+            return $user->level >= 1;
+        });
     }
 }

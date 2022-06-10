@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
-@section('styles')
+@push('styles')
+    {{-- DataTable 1.12.1 --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.12.1/css/dataTables.bootstrap5.min.css" integrity="sha256-Gi0zf/w6mtVaPCItsxg61EXN6hRRzK9eZB4STWCvxNk=" crossorigin="anonymous">
+
     <style type="text/css">
         .sidebar {
             position: fixed;
@@ -36,9 +39,10 @@
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
-
     </style>
-@endsection
+
+    @yield('styles-dashboard')
+@endpush
 
 @section('main-plain')
     <div class="row">
@@ -48,30 +52,24 @@
                     <div class="navbar-nav flex-column">
                         <a class="navbar-brand" href="{{ route('dashboard.index') }}">Dashboard</a>
 
-                        <a class="nav-item nav-link active" href="#">
-                            <span data-feather="file"></span>
-                            Orders
-                        </a>
-                        <a class="nav-item nav-link" href="#">
-                            <span data-feather="shopping-cart"></span>
-                            Products
-                        </a>
-                        <a class="nav-item nav-link" href="#">
-                            <span data-feather="users"></span>
-                            Customers
-                        </a>
+                        <a class="nav-item nav-link {{ Route::is('dashboard.book') ? 'active' : '' }}" href="{{ route('dashboard.book') }}">Buku</a>
+                        <a class="nav-item nav-link {{ Route::is('dashboard.category') ? 'active' : '' }}" href="{{ route('dashboard.category') }}">Kategori</a>
+                        <a class="nav-item nav-link {{ Route::is('dashboard.author') ? 'active' : '' }}" href="{{ route('dashboard.author') }}">Penulis</a>
+                        <a class="nav-item nav-link {{ Route::is('dashboard.review') ? 'active' : '' }}" href="{{ route('dashboard.review') }}">Ulasan</a>
+                        <a class="nav-item nav-link {{ Route::is('dashboard.user') ? 'active' : '' }}" href="{{ route('dashboard.user') }}">User</a>
+                        <a class="nav-item nav-link {{ Route::is('dashboard.moderator') ? 'active' : '' }}" href="{{ route('dashboard.moderator') }}">Moderator</a>
                     </div>
                 </div>
             </div>
         </nav>
 
-        <main class="ms-sm-auto {{-- col-md-9 --}} col-lg-10">
+        <main class="ms-sm-auto col-lg-10">
             <div class="container-fluid px-2 px-sm-3 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Orders</h1>
+                    <h1 class="h2">{{ ucwords(str_replace('.', ' - ', str_replace('.index', '', Route::currentRouteName()))) }}</h1>
 
                     <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group {{-- me-2 --}}">
+                        <div class="btn-group">
                             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
                         </div>
@@ -88,3 +86,9 @@
         </main>
     </div>
 @endsection
+
+@push('scripts')
+    {{-- DataTable 1.12.1 --}}
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net@1.12.1/js/jquery.dataTables.min.js" integrity="sha256-XNhaB1tBOSFMHu96BSAJpZOJzfZ4SZI1nwAbnwry2UY=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.12.1/js/dataTables.bootstrap5.min.js" integrity="sha256-2iYlCYmJTHCqEILUjOjrGFWPHIy4n6+CvHzOYZT2Sto=" crossorigin="anonymous"></script>
+@endpush

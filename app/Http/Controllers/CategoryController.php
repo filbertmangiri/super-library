@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
-use Illuminate\Support\Facades\Redirect;
 
 class CategoryController extends Controller
 {
@@ -28,7 +29,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('dashboard.category.create');
     }
 
     /**
@@ -39,7 +40,15 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $validated['slug'] = Str::slug($validated['name']);
+
+        Category::create($validated);
+
+        return Redirect::route('dashboard.category')->with('alert', [
+            'text' => 'Berhasil menambahkan kategori'
+        ]);
     }
 
     /**
@@ -50,10 +59,6 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        // return view('book.index', [
-        //     'books' => $category->books->load(['category'])
-        // ]);
-
         return Redirect::route('book.index', ['category' => $category->slug]);
     }
 
@@ -65,7 +70,9 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        return view('dashboard.category.edit', [
+            'category' => $category
+        ]);
     }
 
     /**
@@ -77,7 +84,15 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        //
+        $validated = $request->validated();
+
+        $validated['slug'] = Str::slug($validated['name']);
+
+        $category->update($validated);
+
+        return Redirect::route('dashboard.category')->with('alert', [
+            'text' => 'Berhasil memperbarui kategori'
+        ]);
     }
 
     /**
@@ -88,6 +103,10 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        Category::destroy($category->id);
+
+        return Redirect::route('dashboard.category')->with('alert', [
+            'text' => 'Berhasil menghapus kategori'
+        ]);
     }
 }

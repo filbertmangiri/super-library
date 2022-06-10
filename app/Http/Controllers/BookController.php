@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Author;
+use App\Models\Category;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreBookRequest;
 use App\Http\Requests\UpdateBookRequest;
-use App\Models\Author;
-use App\Models\Category;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
@@ -21,7 +24,7 @@ class BookController extends Controller
         return view('book.index', [
             'categories' => Category::all(), // For filtering by category
             'authors' => Author::all(), // For filtering by author
-            'books' => Book::filter($request)->paginate(10)->withQueryString()
+            'books' => Book::filter($request)->paginate(20)->withQueryString()
         ]);
     }
 
@@ -32,7 +35,10 @@ class BookController extends Controller
      */
     public function create()
     {
-        //
+        return view('dashboard.book.create', [
+            'categories' => Category::all(),
+            'authors' => Author::all()
+        ]);
     }
 
     /**
@@ -43,7 +49,21 @@ class BookController extends Controller
      */
     public function store(StoreBookRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $validated['slug'] = Str::slug($validated['title']);
+
+        if ($request->file('cover')) {
+            $validated['cover'] = $request->file('cover')->store('book-covers');
+        } else {
+            $validated['cover'] = Book::IMAGE_PATH;
+        }
+
+        Book::create($validated);
+
+        return Redirect::route('dashboard.book')->with('alert', [
+            'text' => 'Berhasil menambahkan buku'
+        ]);
     }
 
     /**
@@ -70,7 +90,11 @@ class BookController extends Controller
      */
     public function edit(Book $book)
     {
-        //
+        return view('dashboard.book.edit', [
+            'categories' => Category::all(),
+            'authors' => Author::all(),
+            'book' => $book
+        ]);
     }
 
     /**
@@ -82,7 +106,23 @@ class BookController extends Controller
      */
     public function update(UpdateBookRequest $request, Book $book)
     {
-        //
+        $validated = $request->validated();
+
+        $validated['slug'] = Str::slug($validated['title']);
+
+        if ($request->file('cover')) {
+            if ($request->input('old_cover') && $request->input('old_cover') != Book::IMAGE_PATH) {
+                Storage::delete($request->input('old_cover'));
+            }
+
+            $validated['cover'] = $request->file('cover')->store('book-covers');
+        }
+
+        $book->update($validated);
+
+        return Redirect::route('dashboard.book')->with('alert', [
+            'text' => 'Berhasil memperbarui buku'
+        ]);
     }
 
     /**
@@ -93,6 +133,10 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        //
+        Book::destroy($book->id);
+
+        return Redirect::route('dashboard.book')->with('alert', [
+            'text' => 'Berhasil menghapus buku'
+        ]);
     }
 }

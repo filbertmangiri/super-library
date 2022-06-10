@@ -18,7 +18,7 @@ return new class extends Migration
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignIdFor(Book::class);
+            $table->foreignIdFor(Book::class, 'book_id');
             $table->foreignIdFor(User::class, 'reviewer_id');
             $table->text('body')->fulltext();
 

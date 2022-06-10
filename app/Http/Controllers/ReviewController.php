@@ -39,7 +39,14 @@ class ReviewController extends Controller
     {
         $validated = $request->validated();
 
-        Review::create($validated);
+        $foundReview = Review::where('book_id', $validated['book_id'])->where('reviewer_id', $validated['reviewer_id'])->withTrashed()->first();
+
+        if ($foundReview) {
+            $foundReview->restore();
+            $foundReview->update($validated);
+        } else {
+            Review::create($validated);
+        }
 
         return Redirect::back()->with('alert', [
             'text' => 'Berhasil memberikan ulasan'
@@ -77,7 +84,13 @@ class ReviewController extends Controller
      */
     public function update(UpdateReviewRequest $request, Review $review)
     {
-        //
+        $validated = $request->validated();
+
+        $review->update($validated);
+
+        return Redirect::back()->with('alert', [
+            'text' => 'Berhasil mengubah ulasan'
+        ]);
     }
 
     /**

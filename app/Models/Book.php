@@ -33,6 +33,8 @@ class Book extends Model
         ];
     } */
 
+    public const IMAGE_PATH = 'book-covers/default.jpg';
+
     public function scopeFilter(Builder $query, Request $request)
     {
         $query->when($request->has('search'), function (Builder $query) use ($request) {
@@ -71,5 +73,14 @@ class Book extends Model
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::softDeleted(function (Book $book) {
+            $book->reviews()->delete();
+        });
     }
 }

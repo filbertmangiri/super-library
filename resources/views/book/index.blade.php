@@ -1,42 +1,10 @@
 @extends('layouts.app')
 
-@section('styles')
+@push('styles')
+    {{-- Select2 4.1.0 --}}
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
-
-    <style type="text/css">
-        /* Category and Author filters */
-        .select2-selection {
-            /* background-color: #262626 !important; */
-            --bs-bg-opacity: 1;
-            background-color: rgba(var(--bs-dark-rgb), var(--bs-bg-opacity)) !important;
-            color: #FBFBFB !important;
-        }
-
-        .select2-selection__rendered {
-            color: #FBFBFB !important;
-        }
-
-        .select2-search {
-            background-color: #262626 !important;
-        }
-
-        .select2-search__field {
-            background-color: #262626 !important;
-            color: #FBFBFB !important;
-        }
-
-        .select2-results {
-            background-color: #262626 !important;
-            color: #FBFBFB !important;
-        }
-
-        .select2-results__option[aria-selected="true"] {
-            background-color: #1266F1 !important;
-        }
-
-    </style>
-@endsection
+@endpush
 
 @section('main-container')
     <div class="d-flex justify-content-center mb-5">
@@ -94,15 +62,13 @@
     </div>
 
     @if ($books->count())
-        @php($imageLink = 'https://source.unsplash.com/1200x1400?programming')
-
         <div class="card bg-dark mb-4 mb-md-5 h-100">
             <div class="position-absolute px-3 py-2" style="background-color: rgba(0, 0, 0, 0.7)">
                 <a href="{{ route('book.index', ['category' => $books[0]->category->slug]) }}" class="text-decoration-none text-reset stretched-link">{{ $books[0]->category->name }}</a>
             </div>
 
             <a href="{{ route('book.show', $books[0]->slug) }}" class="card-img-top d-flex align-items-center justify-content-center" style="height: 200px">
-                <img class="img-fluid mw-100 mh-100" src="{{ $imageLink }}" alt="{{ $books[0]->title }}" />
+                <img src="{{ asset('storage/' . $books[0]->cover) }}" class="img-fluid mw-100 mh-100" alt="{{ $books[0]->title }}" />
             </a>
 
             <div class="card-body text-center">
@@ -123,7 +89,7 @@
                         </div>
 
                         <a href="{{ route('book.show', $book->slug) }}" class="card-img-top d-flex align-items-center justify-content-center">
-                            <img src="{{ $imageLink }}" class="img-fluid mw-100 mh-100" alt="{{ $book->title }}">
+                            <img src="{{ asset('storage/' . $book->cover) }}" class="img-fluid mw-100 mh-100" alt="{{ $book->title }}">
                         </a>
 
                         <div class="card-body">
@@ -145,7 +111,7 @@
     @endif
 @endsection
 
-@section('scripts')
+@push('scripts')
     {{-- Select2 4.1.0 --}}
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
@@ -167,4 +133,4 @@
             })
         })
     </script>
-@endsection
+@endpush

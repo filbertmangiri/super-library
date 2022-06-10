@@ -47,8 +47,27 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public const IMAGE_PATH = 'user-photos/default.jpg';
+
     public function reviews()
     {
-        return $this->hasMany(Review::class);
+        return $this->hasMany(Review::class, 'reviewer_id');
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::forceDeleted(function (User $user) {
+            $user->reviews()->forceDelete();
+        });
+
+        static::softDeleted(function (User $user) {
+            $user->reviews()->delete();
+        });
+
+        static::restored(function (User $user) {
+            $user->reviews()->restore();
+        });
     }
 }

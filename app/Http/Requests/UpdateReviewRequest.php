@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Review;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateReviewRequest extends FormRequest
@@ -13,7 +15,11 @@ class UpdateReviewRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        if (!Auth::check()) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -24,7 +30,11 @@ class UpdateReviewRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'body' => [
+                'required',
+                'min:5',
+                'max:1000'
+            ]
         ];
     }
 }

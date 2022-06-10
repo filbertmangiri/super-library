@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Schema\Builder;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Redirect;
 
 class AuthController extends Controller
 {
@@ -35,7 +35,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            return Redirect::intended(route('page.home'))->with('alert', [
+            return Redirect::intended(route('home'))->with('alert', [
                 'text' => 'Berhasil masuk'
             ]);
         }
@@ -75,22 +75,34 @@ class AuthController extends Controller
                 'confirmed',
                 'min:5',
                 'max:' . Builder::$defaultStringLength
+            ],
+            'photo' => [
+                'image',
+                'file',
+                'max:4096'
             ]
         ], [], [
             'name' => 'nama',
             'username' => 'nama pengguna',
             'email' => 'alamat email',
-            'password' => 'kata sandi'
+            'password' => 'kata sandi',
+            'photo' => 'foto profil'
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
+
+        if ($request->file('photo')) {
+            $validated['photo'] = $request->file('photo')->store('user-photos');
+        } else {
+            $validated['photo'] = User::IMAGE_PATH;
+        }
 
         $user = User::create($validated);
 
         Auth::loginUsingId($user->id);
         $request->session()->regenerate();
 
-        return Redirect::intended(route('page.home'))->with('alert', [
+        return Redirect::intended(route('home'))->with('alert', [
             'text' => 'Berhasil mendaftar'
         ]);
     }
@@ -103,7 +115,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::intended(route('page.home'))->with('alert', [
+        return Redirect::intended(route('home'))->with('alert', [
             'text' => 'Berhasil keluar'
         ]);
     }

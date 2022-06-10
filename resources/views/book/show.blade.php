@@ -5,7 +5,7 @@
         <div class="col col-md-9 col-lg-8">
             <div class="row row-cols-1 row-cols-md-2" style="height: 400px">
                 <div class="col-md-5 h-100">
-                    <img class="img-fluid mw-100 mh-100" src="https://source.unsplash.com/600x800" alt="{{ $book->title }}">
+                    <img class="img-fluid mw-100 mh-100" src="{{ asset('storage/' . $book->cover) }}" alt="{{ $book->title }}">
                 </div>
 
                 <div class="col-md-7 h-100 d-flex flex-column">
@@ -16,13 +16,7 @@
                     </div>
 
                     <div class="overflow-auto">
-                        <p>{{ $book->synopsis }}
-                            {{ $book->synopsis }}
-                            {{ $book->synopsis }}
-                            {{ $book->synopsis }}
-                            {{ $book->synopsis }}
-                            {{ $book->synopsis }}
-                            {{ $book->synopsis }}</p>
+                        <p>{{ $book->synopsis }}</p>
                     </div>
                 </div>
             </div>
@@ -74,7 +68,7 @@
 
                         @if (Auth::check() && $review->reviewer->id == Auth::user()->id)
                             <div>
-                                <button class="btn btn-sm btn-secondary me-1" id="editMyReview" data-review-id="{{ $review->id }}">Ubah</button>
+                                <button class="btn btn-sm btn-secondary me-1" onclick="editMyReview('{{ route('review.update', ['review' => $review->id]) }}')">Ubah</button>
                                 <form action="{{ route('review.destroy', ['review' => $review->id]) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
@@ -92,39 +86,40 @@
     </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
     <script type="text/javascript">
-        $('#editMyReview').click(function() {
+        function editMyReview(action) {
             Swal.fire({
                 title: 'Ubah Ulasan',
-                input: 'textarea',
-                inputAttributes: {
-                    placeholder: 'Berikan ulasan...'
-                },
+                html: `
+                    <form action="${action}" method="POST" id="updateMyReview">
+                        @csrf
+                        @method('PUT')
+
+                        <textarea name="body" id="body" cols="200" rows="5" class="form-control bg-dark text-light" placeholder="Berikan ulasan..."></textarea>
+                    </form>
+                `,
+                showConfirmButton: true,
                 confirmButtonText: 'Selesai',
-                focusConfirm: false,
                 showCancelButton: true,
                 cancelButtonText: 'Kembali',
                 preConfirm: () => {
-                    const login = Swal.getPopup().querySelector('#login').value
-                    const password = Swal.getPopup().querySelector('#password').value
+                    const body = Swal.getPopup().querySelector('[name="body"]').value
 
-                    if (!login || !password) {
-                        Swal.showValidationMessage(`Please enter login and password`)
+                    if (!body) {
+                        Swal.showValidationMessage(`Harap masukkan ulasan`)
                     }
 
                     return {
-                        login: login,
-                        password: password
+                        body: body
                     }
                 }
             }).then((result) => {
-                Swal.fire(`
-    Login: ${result.value.login}
-    Password: ${result.value.password}
-  `.trim())
+                if (result.isConfirmed) {
+                    Swal.getPopup().querySelector('form#updateMyReview').submit()
+                }
             })
-        })
+        }
 
         $('#deleteMyReview').click(function(event) {
             event.preventDefault()
@@ -132,8 +127,8 @@
             Swal.fire({
                 title: 'Anda yakin ingin menghapus ulasan ini?',
                 icon: 'warning',
-                showCancelButton: true,
                 confirmButtonText: 'Hapus',
+                showCancelButton: true,
                 cancelButtonText: 'Kembali'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -142,4 +137,4 @@
             })
         })
     </script>
-@endsection
+@endpush

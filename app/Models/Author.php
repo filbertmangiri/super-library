@@ -18,4 +18,13 @@ class Author extends Model
     {
         return $this->hasMany(Book::class);
     }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::softDeleted(function (Author $author) {
+            $author->books()->delete();
+        });
+    }
 }

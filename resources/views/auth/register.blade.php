@@ -3,7 +3,7 @@
 @section('main-container')
     <div class="row justify-content-center">
         <div class="col-11 col-sm-9 col-md-7 col-lg-5">
-            <form action="{{ route('auth.register') }}" method="POST" style="margin-top: 50px">
+            <form action="{{ route('auth.register') }}" method="POST" id="registerForm" style="margin-top: 50px" enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-floating mb-2">
@@ -64,6 +64,18 @@
                             @enderror
                         </div>
                     </div>
+
+                    <div class="mb-3">
+                        Foto Profil
+                        <img class="img-fluid mt-1 mb-3 col-5 col-sm-3 col-md-2" id="userPhotoPreview" />
+                        <input type="file" name="photo" class="form-control bg-dark text-light @error('photo') is-invalid @enderror">
+
+                        @error('photo')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-secondary w-100">DAFTAR</button>
@@ -71,3 +83,21 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script type="text/javascript">
+        $('#registerForm input[name="photo"]').change(function() {
+            const _image = document.querySelector('#registerForm input[name="photo"]')
+            const _userPhotoPreview = document.querySelector('#userPhotoPreview')
+
+            _userPhotoPreview.style.display = 'block'
+
+            const oFReader = new FileReader()
+            oFReader.readAsDataURL(_image.files[0])
+
+            oFReader.onload = function(oFREvent) {
+                _userPhotoPreview.src = oFREvent.target.result
+            }
+        })
+    </script>
+@endpush

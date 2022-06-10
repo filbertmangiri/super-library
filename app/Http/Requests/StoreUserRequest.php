@@ -2,10 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Database\Schema\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCategoryRequest extends FormRequest
+class StoreUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -20,16 +19,16 @@ class StoreCategoryRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules()
     {
         return [
-            'name' => [
-                'required',
-                'unique:categories,name',
-                'min:5',
-                'max:' . Builder::$defaultStringLength
+            'level' => 'numeric',
+            'image' => [
+                'image',
+                'file',
+                'max:4096'
             ]
         ];
     }

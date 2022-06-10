@@ -10,10 +10,6 @@ class Category extends Model
 {
     use HasFactory, SoftDeletes;
 
-    // protected $with = [
-    //     'books'
-    // ];
-
     protected $guarded = [
         'id'
     ];
@@ -21,5 +17,14 @@ class Category extends Model
     public function books()
     {
         return $this->hasMany(Book::class);
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::softDeleted(function (Category $category) {
+            $category->books()->delete();
+        });
     }
 }

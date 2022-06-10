@@ -1,6 +1,6 @@
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark" style="transition: top 0.2s ease-in-out">
     <div class="container-fluid px-2 px-sm-3 px-md-4 px-lg-5">
-        <a class="navbar-brand" href="{{ route('page.home') }}">{{ env('APP_NAME') }}</a>
+        <a class="navbar-brand" href="{{ route('book.index') }}">{{ env('APP_NAME') }}</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarItems" aria-controls="navbarItems" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -8,9 +8,7 @@
 
         <div class="collapse navbar-collapse" id="navbarItems">
             <div class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
-                <a class="nav-link {{ Route::is('page.home') ? 'active' : '' }}" href="{{ route('page.home') }}">Beranda</a>
                 <a class="nav-link {{ Route::is('book.*') ? 'active' : '' }}" href="{{ route('book.index') }}">Daftar Buku</a>
-                <a class="nav-link {{ Route::is('category.*') ? 'active' : '' }}" href="{{ route('category.index') }}">Kategori</a>
                 <a class="nav-link {{ Route::is('page.about') ? 'active' : '' }}" href="{{ route('page.about') }}">Tentang Kami</a>
             </div>
 
@@ -20,16 +18,25 @@
                 @auth
                     <div class="nav-item dropdown">
                         <div class="nav-link dropdown-toggle" role="button" id="profileMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img class="rounded-circle" src="https://s3.amazonaws.com/cms-assets.tutsplus.com/uploads/users/810/profiles/19338/profileImage/profile-square-extra-small.png" alt="Foto Profil Saya" height="30px">
+                            <img class="rounded-circle" src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Foto Profil Saya" height="30px">
                             {{ Auth::user()->name }}
                         </div>
 
                         <div class="dropdown-menu dropdown-menu-dark dropdown-menu-end col-sm-6 col-md-4" aria-labelledby="profileMenu">
-                            <a class="dropdown-item {{ Route::is('dashboard.*') ? 'active' : '' }}" href="{{ route('dashboard.index') }}">
-                                <i class="bi bi-layout-text-sidebar-reverse"></i>
-                                Dashboard
+                            <a class="dropdown-item {{ Route::is('user.*') ? 'active' : '' }}" href="{{ route('user.show', ['user' => Auth::user()->username]) }}">
+                                <i class="bi bi-person-circle"></i>
+                                My Profile
                             </a>
+
+                            @can('atleast_moderator', Auth::user())
+                                <a class="dropdown-item {{ Route::is('dashboard.*') ? 'active' : '' }}" href="{{ route('dashboard.index') }}">
+                                    <i class="bi bi-layout-text-sidebar-reverse"></i>
+                                    Dashboard
+                                </a>
+                            @endcan
+
                             <hr class="dropdown-divider">
+
                             <form action="{{ route('auth.logout') }}" method="POST">
                                 @csrf
 

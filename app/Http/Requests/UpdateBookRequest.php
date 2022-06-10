@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Database\Schema\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateBookRequest extends FormRequest
@@ -13,7 +14,7 @@ class UpdateBookRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +25,30 @@ class UpdateBookRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'title' => [
+                'required',
+                'unique:books,title,' . $this->book->id,
+                'min:5',
+                'max:' . Builder::$defaultStringLength
+            ],
+            'author_id' => [
+                'required',
+                'numeric'
+            ],
+            'category_id' => [
+                'required',
+                'numeric'
+            ],
+            'image' => [
+                'image',
+                'file',
+                'max:4096'
+            ],
+            'synopsis' => [
+                'required',
+                'min:5',
+                'max:' . Builder::$defaultStringLength
+            ]
         ];
     }
 }

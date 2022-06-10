@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Author;
+use App\Models\Book;
 use App\Models\Category;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -20,10 +21,10 @@ return new class extends Migration
 
             $table->string('title')->unique();
             $table->string('slug')->unique();
-            $table->foreignIdFor(Author::class);
-            $table->foreignIdFor(Category::class);
+            $table->foreignIdFor(Author::class, 'author_id');
+            $table->foreignIdFor(Category::class, 'category_id');
+            $table->string('cover')->default(Book::IMAGE_PATH);
             $table->text('synopsis')->fulltext();
-            // $table->string('cover');
 
             $table->timestamps();
             $table->softDeletes();

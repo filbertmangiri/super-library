@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,9 +22,9 @@ use App\Http\Controllers\DashboardController;
 |
 */
 
+Route::get('/', [BookController::class, 'index'])->name('home');
+
 Route::name('page.')->controller(PageController::class)->group(function () {
-    Route::get('/', 'home')->name('home');
-    Route::get('home', fn () => Redirect::route('page.home'));
     Route::get('about', 'about')->name('about');
 });
 
@@ -39,9 +40,27 @@ Route::name('auth.')->controller(AuthController::class)->group(function () {
     Route::post('logout', 'logout')->name('logout')->middleware('auth');
 });
 
-Route::name('dashboard.')->controller(DashboardController::class)->middleware('auth')->group(function () {
-    Route::get('dashboard', 'index')->name('index');
+Route::name('dashboard.')->prefix('dashboard')->controller(DashboardController::class)->middleware('isAtLeastModerator')->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::get('book', 'book')->name('book');
+    Route::get('category', 'category')->name('category');
+    Route::get('author', 'author')->name('author');
+    Route::get('review', 'review')->name('review');
+    Route::get('user', 'user')->name('user');
+    Route::get('moderator', 'moderator')->name('moderator');
 });
+
+Route::name('user.')->prefix('user')->controller(UserController::class)->group(function () {
+    Route::get('createModerator', 'createModerator')->name('createModerator');
+    Route::put('storeModerator', 'storeModerator')->name('storeModerator');
+    Route::patch('restore', 'restore')->name('restore');
+    Route::delete('forceDelete', 'forceDelete')->name('forceDelete');
+    Route::patch('restoreAll', 'restoreAll')->name('restoreAll');
+});
+
+Route::resource('user', UserController::class)->parameters([
+    'user' => 'user:username'
+]);
 
 Route::resource('book', BookController::class)->parameters([
     'book' => 'book:slug'

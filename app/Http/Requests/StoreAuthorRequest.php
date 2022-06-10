@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Database\Schema\Builder;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreAuthorRequest extends FormRequest
@@ -13,7 +14,7 @@ class StoreAuthorRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +25,12 @@ class StoreAuthorRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => [
+                'required',
+                'unique:authors,name',
+                'min:5',
+                'max:' . Builder::$defaultStringLength
+            ]
         ];
     }
 }
