@@ -77,7 +77,7 @@ class BookController extends Controller
         return view('book.show', [
             'book' => $book->load([
                 'category',
-                'reviews.reviewer:id,name,username'
+                'reviews.reviewer:id,name,username,photo'
             ])
         ]);
     }
