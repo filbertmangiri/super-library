@@ -33,7 +33,7 @@
                         @csrf
 
                         <div class="d-flex flex-row">
-                            <img src="https://i.imgur.com/zQZSWrt.jpg" alt="{{ Auth::user()->name }}" class="rounded-circle me-3" height="50">
+                            <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="{{ Auth::user()->name }}" class="rounded-circle me-3" height="50">
 
                             <div class="d-flex flex-column">
                                 <input type="hidden" name="book_id" value="{{ $book->id }}">
@@ -56,7 +56,7 @@
                 @endif
 
                 <div class="d-flex flex-row mt-5">
-                    <img src="https://i.imgur.com/zQZSWrt.jpg" alt="{{ $review->reviewer->name }}" class="rounded-circle me-3" height="50">
+                    <img src="{{ asset('storage/' . $review->reviewer->photo) }}" alt="{{ $review->reviewer->name }}" class="rounded-circle me-3" height="50">
 
                     <div class="d-flex flex-column">
                         <div class="d-flex flex-row justify-content-between">
